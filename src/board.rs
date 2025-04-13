@@ -1,7 +1,11 @@
-pub struct Board(pub u128);
+pub struct Board {
+    pub player_boards: [u128; 2]
+}
 
 impl Board {
-    pub fn new(size: (usize, usize)) -> Self {
-        Board(0)    // empty bitboard
+    pub fn new() -> Self {
+        Board {
+            player_boards: [0; 2]       // empty bitboard for each player
+        }
     }
 }
