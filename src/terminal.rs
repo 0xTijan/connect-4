@@ -1,7 +1,7 @@
 pub fn size_input() -> (u8, u8) {
     // keep asking for input, until: valid size and valid input
     loop {
-        println!("Enter the size of the board (width height): ");
+        println!("Enter the size of the board (width height separated by space): ");
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).expect("Failed to read line");
         let parts: Vec<&str> = input.trim().split_whitespace().collect();
@@ -76,7 +76,7 @@ const MIN_DIFFICULTY: u8 = 1;
 fn is_valid_size(width: u8, height: u8) -> bool {
     width >= MIN_WIDTH &&
     height >= MIN_HEIGHT &&
-    width * (height + 1) <= MAX_BITS
+    width * height <= MAX_BITS
 }
 
 fn is_valid_difficulty(difficulty: u8) -> bool {
