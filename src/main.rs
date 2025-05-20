@@ -8,8 +8,9 @@ use bitboard::{BitBoard, Piece};
 use std::io;
 
 fn main() {
-    let size = terminal::size_input(); // user inputs board size
-    let mut board = BitBoard::new(size.0, size.1, 5);
+    let settings = terminal::get_player_settings_input();
+    let difficulty = terminal::difficulty_input(); // user inputs difficulty
+    let mut board = BitBoard::new(settings.0, settings.1, settings.2);
     board.print();
 
     let mut current = Piece::Player;
@@ -19,24 +20,11 @@ fn main() {
 
         if current == Piece::Player {
             // Ask player for column input
-            println!("Your turn. Choose a column");
-
-            col = loop {
-                let mut input = String::new();
-                if io::stdin().read_line(&mut input).is_err() {
-                    println!("Error reading input. Try again.");
-                    continue;
-                }
-
-                match input.trim().parse::<u8>() {
-                    Ok(c) if board.get_valid_locations().contains(&c) => break c,
-                    _ => println!("Invalid column. Try again:"),
-                }
-            };
+            col = terminal::get_player_column_input(settings.1);
         } else {
             // AI move using minimax
             println!("AI is thinking...");
-            col = best_move(&board); // adjust depth if needed
+            col = best_move(&board, difficulty); // adjust depth if needed
             println!("AI chooses column: {}", col);
         }
 

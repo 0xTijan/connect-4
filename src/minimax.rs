@@ -6,13 +6,13 @@ pub struct MinimaxRes {
     pub index: Option<i32>,
 }
 
-pub fn best_move(board: &BitBoard) -> u8 {
+pub fn best_move(board: &BitBoard, depth: u8) -> u8 {
     let mut cloned_board = board.clone(); // Clone to preserve original board
-    let result = minimax(&mut cloned_board, &Piece::AI, i32::MIN, i32::MAX);
+    let result = minimax(&mut cloned_board, &Piece::AI, i32::MIN, i32::MAX, u8::MAX);
     result.index.unwrap() as u8
 }
 
-fn minimax(board: &mut BitBoard, curr_player: &Piece, mut alpha: i32, mut beta: i32) -> MinimaxRes {
+fn minimax(board: &mut BitBoard, curr_player: &Piece, mut alpha: i32, mut beta: i32, depth: u8) -> MinimaxRes {
     let valid_moves = board.get_valid_locations();
 
     // Terminal state check
@@ -49,7 +49,7 @@ fn minimax(board: &mut BitBoard, curr_player: &Piece, mut alpha: i32, mut beta: 
             Piece::AI
         };
 
-        let res = minimax(&mut new_board, &next_player, alpha, beta);
+        let res = minimax(&mut new_board, &next_player, alpha, beta, depth - 1);
 
         // Reset board
         let current_move = MinimaxRes {
@@ -80,6 +80,6 @@ fn minimax(board: &mut BitBoard, curr_player: &Piece, mut alpha: i32, mut beta: 
     best_test_play
 }
 
-fn heuristic(board: &BitBoard, piece: &Piece) -> i32 {
+fn heuristic(board: &BitBoard) -> i32 {
     0
 }

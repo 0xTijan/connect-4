@@ -1,1 +1,1 @@
-# Rust Connect 4
+# Rust Connect N
