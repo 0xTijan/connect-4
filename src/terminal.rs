@@ -76,7 +76,7 @@ const MIN_DIFFICULTY: u8 = 1;
 fn is_valid_size(width: u8, height: u8) -> bool {
     width >= MIN_WIDTH &&
     height >= MIN_HEIGHT &&
-    width * height <= MAX_BITS
+    (width + 1) * (height + 1) <= MAX_BITS
 }
 
 fn is_valid_difficulty(difficulty: u8) -> bool {

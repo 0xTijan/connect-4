@@ -9,7 +9,7 @@ use std::io;
 
 fn main() {
     let size = terminal::size_input(); // user inputs board size
-    let mut board = BitBoard::new(size.0, size.1);
+    let mut board = BitBoard::new(size.0, size.1, 5);
     board.print();
 
     let mut current = Piece::Player;
