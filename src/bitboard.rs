@@ -1,10 +1,10 @@
 #[derive(Clone, Debug)]
 pub struct BitBoard {
-    player_mask: u128,  // bitboard for player pieces
-    ai_mask: u128,      // bitboard for AI pieces
+    pub player_mask: u128,  // bitboard for player pieces
+    pub ai_mask: u128,      // bitboard for AI pieces
     heights: Vec<u8>,
-    rows: u8,
-    cols: u8,
+    pub rows: u8,
+    pub cols: u8,
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]

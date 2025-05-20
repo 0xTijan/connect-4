@@ -36,7 +36,7 @@ fn main() {
         } else {
             // AI move using minimax
             println!("AI is thinking...");
-            col = best_move(&board, 5); // adjust depth if needed
+            col = best_move(&board); // adjust depth if needed
             println!("AI chooses column: {}", col);
         }
 

@@ -1,78 +1,85 @@
 use crate::bitboard::{BitBoard, Piece};
 
-
-pub fn best_move(board: &BitBoard, depth: u8) -> u8 {
-    // for each possible move simulate minimax
-    // track and return the best move
-    let valid_moves = board.get_valid_locations();
-    let mut best_score = i32::MIN;
-    let mut best_move = 0;
-
-    for &col in &valid_moves {
-        let new_board = board.drop_piece(col, Piece::AI).unwrap();
-        let score = minimax(&new_board, depth, i32::MIN, i32::MAX, Piece::Player);
-        if score > best_score {
-            best_score = score;
-            best_move = col;
-        }
-        println!("Score for column {}: {}", col, score);
-    }
-
-    best_move
+// Struct to store minimax results
+pub struct MinimaxRes {
+    pub score: i32,
+    pub index: Option<i32>,
 }
 
-fn minimax(board: &BitBoard, depth: u8, mut alpha: i32, mut beta: i32, player: Piece) -> i32 {
-    // if game is over or depth is 0 - return heuristic of board
-    if  
-        depth == 0 ||
-        board.is_full() ||
-        board.check_win(Piece::Player) ||
-        board.check_win(Piece::AI)
-    {
-        return heuristic(board);
-    }
-
-    let valid_moves = board.get_valid_locations();
-
-    if player == Piece::AI {
-        // maximizing player - ai
-        let mut best_score = i32::MIN;
-
-        for &col in &valid_moves {
-            let new_board = board.drop_piece(col, Piece::AI).unwrap();
-            let score = minimax(&new_board, depth - 1, alpha, beta, Piece::Player);
-            best_score = best_score.max(score);
-            alpha = alpha.max(score);
-            if beta <= alpha {
-                break; // beta cut-off
-            }
-        }
-
-        return best_score;
-    } else {
-        // minimizing player - player
-        let mut best_score = i32::MAX;
-
-        for &col in &valid_moves {
-            let new_board = board.drop_piece(col, Piece::AI).unwrap();
-            let score = minimax(&new_board, depth - 1, alpha, beta, Piece::AI);
-            best_score = best_score.min(score);
-            beta = beta.min(score);
-            if beta <= alpha {
-                break; // alpha cut-off
-            }
-        }
-
-        return best_score;
-    }
+pub fn best_move(board: &BitBoard) -> u8 {
+    let mut cloned_board = board.clone(); // Clone to preserve original board
+    let result = minimax(&mut cloned_board, &Piece::AI, i32::MIN, i32::MAX);
+    result.index.unwrap() as u8
 }
 
-fn heuristic(board: &BitBoard) -> i32 {
-    if board.check_win(Piece::AI) {
-        return 1_000_000;
-    } else if board.check_win(Piece::Player) {
-        return -1_000_000;
-    } else {
-        return 0;
+fn minimax(board: &mut BitBoard, curr_player: &Piece, mut alpha: i32, mut beta: i32) -> MinimaxRes {
+    let valid_moves = board.get_valid_locations();
+
+    // Terminal state check
+    if board.check_win(Piece::Player) {
+        return MinimaxRes {
+            score: -1,
+            index: None,
+        };
+    } else if board.check_win(Piece::AI) {
+        return MinimaxRes {
+            score: 1,
+            index: None,
+        };
+    } else if board.is_full() {
+        return MinimaxRes {
+            score: 0,
+            index: None,
+        };
     }
+
+    let mut best_test_play = MinimaxRes {
+        score: if *curr_player == Piece::AI { i32::MIN } else { i32::MAX },
+        index: None,
+    };
+
+    for col in valid_moves {
+        // Simulate move
+        let mut new_board = board.drop_piece(col, *curr_player).unwrap();
+
+        // Recursive minimax
+        let next_player = if *curr_player == Piece::AI {
+            Piece::Player
+        } else {
+            Piece::AI
+        };
+
+        let res = minimax(&mut new_board, &next_player, alpha, beta);
+
+        // Reset board
+        let current_move = MinimaxRes {
+            score: res.score,
+            index: Some(col as i32),
+        };
+
+        if *curr_player == Piece::AI {
+            // Maximizing (AI)
+            if current_move.score > best_test_play.score {
+                best_test_play = current_move;
+            }
+            alpha = alpha.max(best_test_play.score);
+        } else {
+            // Minimizing (Human)
+            if current_move.score < best_test_play.score {
+                best_test_play = current_move;
+            }
+            beta = beta.min(best_test_play.score);
+        }
+
+        // Alpha-beta pruning
+        if beta <= alpha {
+            break;
+        }
+    }
+
+    best_test_play
+}
+
+fn heuristic(board: &BitBoard, piece: &Piece) -> i32 {
+    0
 }
