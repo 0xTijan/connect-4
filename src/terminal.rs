@@ -81,34 +81,31 @@ pub fn get_player_column_input(size: u8) -> u8 {
 }
 
 pub fn difficulty_input() -> u8 {
-    // keep asking for input, until: valid size and valid input
-    loop {
-        println!("Enter the difficulty (easiest 1 <-> 5 hardest): ");
-        let mut input = String::new();
-        std::io::stdin().read_line(&mut input).expect("Failed to read line");
-        let val= input.trim().to_string();
+    let mut difficulty = 10;
 
-        // check if valid number
-        let difficulty: u8 = match val.parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("Invalid difficulty. Please enter a valid number.");
-                continue;
+    // get rows input
+    loop {
+        println!("Enter the difficulty (easiest 1 <-> 20 hardest, default 10): ");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
+
+        if let Ok(n) = input.trim().parse() {
+            if is_valid_difficulty(n) {
+                difficulty = n;
+                break;
             }
-        };
-        
-        // check if board size is valid
-        match is_valid_difficulty(difficulty) {
-            true => return difficulty,
-            false => {
-                println!("Invalid difficulty. Please enter a valid difficulty.");
-                continue;
-            }
+            println!("Rows must be at least 3");
+        } else if input.trim().is_empty() {
+            break;
+        } else {
+            println!("Invalid input");
         }
     }
+
+    difficulty
 }
 
-const MAX_DIFFICULTY: u8 = 5;
+const MAX_DIFFICULTY: u8 = 20;
 const MIN_DIFFICULTY: u8 = 1;
 
 fn is_valid_difficulty(difficulty: u8) -> bool {

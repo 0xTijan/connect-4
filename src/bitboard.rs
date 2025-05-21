@@ -1,3 +1,6 @@
+use std::fmt;
+
+
 #[derive(Clone, Debug)]
 pub struct BitBoard {
     pub player_mask: u128,  // bitboard for player pieces
@@ -106,8 +109,8 @@ impl BitBoard {
         let directions = [
             1,          // vertical
             row_stride,       // horizontal (moving to next column)
-            row_stride + 1,   // diagonal / (one up, one right)
-            row_stride - 1    // diagonal \ (one down, one right)
+            row_stride - 1,   // diagonal / (one up, one right)
+            row_stride + 1    // diagonal \ (one down, one right)
         ];
         
         // check for each direction
@@ -131,7 +134,7 @@ impl BitBoard {
     }
 
     // prints the board state to the terminal
-    pub fn print(&self) {
+    /*pub fn print(&self) {
         println!();
         for r in (0..self.rows).rev() {
             for c in 0..self.cols {
@@ -152,5 +155,29 @@ impl BitBoard {
             print!(" {} ", c);
         }
         println!("\n");
+    }*/
+}
+
+impl fmt::Display for BitBoard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f)?; // blank line for spacing
+        for r in (0..self.rows).rev() {
+            for c in 0..self.cols {
+                let symbol = match self.get_piece(r, c) {
+                    Piece::Empty => '.',
+                    Piece::Player => 'X',
+                    Piece::AI => 'O',
+                };
+                write!(f, " {} ", symbol)?;
+            }
+            writeln!(f)?; // newline after each row
+        }
+        writeln!(f, "{}", "-".repeat((self.cols as usize) * 3))?; // bottom line
+
+        for c in 0..self.cols {
+            write!(f, " {} ", c)?;
+        }
+        writeln!(f)?; // final newline
+        Ok(())
     }
 }

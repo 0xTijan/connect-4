@@ -2,36 +2,39 @@ mod bitboard;
 mod terminal;
 mod minimax;
 
-use minimax::{best_move};
+use minimax::{minimax};
 use bitboard::{BitBoard, Piece};
 
-use std::io;
 
 fn main() {
     let settings = terminal::get_player_settings_input();
     let difficulty = terminal::difficulty_input(); // user inputs difficulty
     let mut board = BitBoard::new(settings.0, settings.1, settings.2);
-    board.print();
+    println!("{}", board);
 
     let mut current = Piece::Player;
 
     loop {
         let col: u8;
-
         if current == Piece::Player {
-            // Ask player for column input
             col = terminal::get_player_column_input(settings.1);
         } else {
             // AI move using minimax
             println!("AI is thinking...");
-            col = best_move(&board, difficulty); // adjust depth if needed
+            col = match minimax(&board, difficulty, i32::MIN, i32::MAX, true).0 {
+                Some(c) => c,
+                None => {
+                    println!("No valid moves for AI!");
+                    break;
+                }
+            }; // adjust depth if needed
             println!("AI chooses column: {}", col);
         }
 
         // Try to apply move
         if let Some(new_board) = board.drop_piece(col, current) {
             board = new_board;
-            board.print();
+            println!("{}", board);
 
             if board.check_win(current) {
                 println!("{:?} wins!", current);
