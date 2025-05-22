@@ -7,6 +7,8 @@ mod minimax;
 use minimax::minimax;
 use bitboard::{BitBoard, Piece};
 use eframe::egui;
+use eframe::egui::{Style, Visuals};
+use terminal::{game_mode_settings_input, Mode, main_loop_terminal};
 
 const CELL_SIZE: f32 = 50.0;
 const CELL_SPACING: f32 = 5.0;
@@ -43,6 +45,7 @@ impl Connect4App {
 impl eframe::App for Connect4App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
+            ctx.set_visuals(Visuals::dark());
             ui.horizontal(|ui| {
                 for col in 0..self.game_state.cols {
                     ui.vertical(|ui| {
@@ -71,7 +74,7 @@ impl eframe::App for Connect4App {
                         for row in 0..self.game_state.rows {
                             let piece = self.game_state.get_piece(row, col);
                             let color = match piece {
-                                Piece::Empty => egui::Color32::WHITE,
+                                Piece::Empty => egui::Color32::GRAY,
                                 Piece::Player => egui::Color32::RED,
                                 Piece::AI => egui::Color32::YELLOW,
                             };
@@ -122,17 +125,23 @@ impl eframe::App for Connect4App {
 }
 
 fn main() -> eframe::Result<()> {
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([600.0, 400.0]),
-        ..Default::default()
-    };
+    let mode = game_mode_settings_input();
+    if mode == Mode::Ui {
+        let options = eframe::NativeOptions {
+            viewport: egui::ViewportBuilder::default()
+                .with_inner_size([600.0, 400.0]),
+            ..Default::default()
+        };
 
-    eframe::run_native(
-        "Connect N",
-        options,
-        Box::new(|cc| {
-            cc.egui_ctx.set_visuals(egui::Visuals::dark());
-            Ok(Box::new(Connect4App::default(cc)))
-        }),
-    )
+        eframe::run_native(
+            "Connect N",
+            options,
+            Box::new(|cc| {
+                Ok(Box::new(Connect4App::default(cc)))
+            }),
+        )
+    } else {
+        main_loop_terminal();
+        Ok(())
+    }
 }
