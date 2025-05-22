@@ -10,5 +10,6 @@ Needed optimizations:
 - move ordering
 - Iterative Deepening
 
-To upgrade:
-- better UI (non-terminal mode)
+
+TODO:
+- create new branch - slo

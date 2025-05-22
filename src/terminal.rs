@@ -7,12 +7,12 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
 
     // get rows input
     loop {
-        println!("Enter number of rows (3-20, default 6): ");
+        println!("Enter number of rows (2-20, default 6): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
         if let Ok(n) = input.trim().parse() {
-            if n >= 3 && n <= 20 {
+            if n >= 2 && n <= 20 {
                 row_count = n;
                 break;
             }
@@ -27,12 +27,12 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
     // get columns input
     let max_col = get_conjugate_value(row_count);
     loop {
-        println!("Enter number of columns (3-{}, default 7): ", {max_col});
+        println!("Enter number of columns (2-{}, default 7): ", {max_col});
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
         if let Ok(n) = input.trim().parse() {
-            if n >= 3 && n <= 20 && n <= max_col {
+            if n >= 2 && n <= 20 && n <= max_col {
                 column_count = n;
                 break;
             }
@@ -47,12 +47,12 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
     // get winning sequence input
     let max_win = row_count.min(column_count);
     loop {
-        println!("Enter the required winning sequence (3-{}, default 4): ", {max_win});
+        println!("Enter the required winning sequence (2-{}, default 4): ", {max_win});
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
         if let Ok(n) = input.trim().parse() {
-            if n >= 3 && n <= max_win {
+            if n >= 2 && n <= max_win {
                 win_sequence = n;
                 break;
             }
