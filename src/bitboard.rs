@@ -133,6 +133,17 @@ impl BitBoard {
         false
     }
 
+    pub fn can_win_next_move(&self, piece: Piece) -> bool {
+        for col in self.get_valid_locations() {
+            if let Some(next_board) = self.drop_piece(col, piece) {
+                if next_board.check_win(piece) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     // prints the board state to the terminal
     /*pub fn print(&self) {
         println!();

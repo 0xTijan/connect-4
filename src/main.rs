@@ -1,5 +1,3 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 mod bitboard;
 mod terminal;
 mod minimax;
@@ -7,7 +5,7 @@ mod minimax;
 use minimax::minimax;
 use bitboard::{BitBoard, Piece};
 use eframe::egui;
-use eframe::egui::{Style, Visuals};
+use eframe::egui::{Visuals};
 use terminal::{game_mode_settings_input, Mode, main_loop_terminal};
 
 const CELL_SIZE: f32 = 50.0;
@@ -18,7 +16,6 @@ struct Connect4App {
     difficulty: u8,
     current: Piece,
     game_over: bool,
-    winner: Option<Piece>,
     message: String,
     ai_move_queued: bool, // Changed from pending_ai_move to ai_move_queued
 }
@@ -35,7 +32,6 @@ impl Connect4App {
             difficulty,
             current: Piece::Player,
             game_over: false,
-            winner: None,
             message: String::new(),
             ai_move_queued: false, // Initialize ai_move_queued
         }

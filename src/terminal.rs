@@ -115,11 +115,11 @@ pub fn get_player_column_input(size: u8) -> u8 {
 }
 
 pub fn difficulty_input() -> u8 {
-    let mut difficulty = 10;
+    let mut difficulty = 5;
 
     // get rows input
     loop {
-        println!("Enter the difficulty (easiest 1 <-> 20 hardest, default 10): ");
+        println!("Enter the difficulty (easiest 1 <-> 10 hardest, default 5): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
