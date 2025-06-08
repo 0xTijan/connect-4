@@ -13,7 +13,7 @@ pub struct Connect4App {
     current: Piece,
     game_over: bool,
     message: String,
-    ai_move_queued: bool, // Changed from pending_ai_move to ai_move_queued
+    ai_move_queued: bool,
 }
 
 impl Connect4App {
@@ -35,7 +35,7 @@ impl Connect4App {
             current:  current,
             game_over: false,
             message: String::new(),
-            ai_move_queued: false, // Initialize ai_move_queued
+            ai_move_queued: false,
         }
     }
 }
@@ -57,14 +57,14 @@ impl eframe::App for Connect4App {
                                 self.game_state = new_board;
                                 if self.game_state.check_win(Piece::Player) {
                                     self.game_over = true;
-                                    self.message = "You win!".to_string();
+                                    self.message = "Zmagal si!".to_string();
                                 } else if self.game_state.is_full() {
                                     self.game_over = true;
-                                    self.message = "It's a draw!".to_string();
+                                    self.message = "Izenačeno!".to_string();
                                 } else {
                                     self.current = Piece::AI;
                                     self.ai_move_queued = true;
-                                    ctx.request_repaint(); // Request repaint to defer AI move to next frame
+                                    ctx.request_repaint();
                                 }
                             }
                         }
@@ -77,7 +77,7 @@ impl eframe::App for Connect4App {
                                 Piece::AI => egui::Color32::YELLOW,
                             };
 
-                            // Calculate y position to invert rows (0 starts at the bottom)
+                            // izračunaj y pozicijo, da obrneš vrstice (0 je na dnu)
                             let y = response.rect.top() 
                                 + CELL_SIZE * (self.game_state.rows - 1 - row) as f32 
                                 + CELL_SIZE / 2.0;
@@ -93,26 +93,26 @@ impl eframe::App for Connect4App {
                 }
             });
 
-            // Process AI move in the next frame after player's move is rendered
+            // procesiraj AI potezo v naslednji sličici, potem ko je igralčeva poteza narisana
             if self.ai_move_queued && self.current == Piece::AI && !self.game_over {
                 if let Some(col) = minimax(&self.game_state, self.difficulty, i32::MIN, i32::MAX, true).0 {
                     if let Some(new_board) = self.game_state.drop_piece(col, Piece::AI) {
                         self.game_state = new_board;
                         if self.game_state.check_win(Piece::AI) {
                             self.game_over = true;
-                            self.message = "AI wins!".to_string();
+                            self.message = "AI zmaga!".to_string();
                         } else if self.game_state.is_full() {
                             self.game_over = true;
-                            self.message = "It's a draw!".to_string();
+                            self.message = "Izenačeno!".to_string();
                         } else {
                             self.current = Piece::Player;
                         }
                     }
                 } else {
                     self.game_over = true;
-                    self.message = "AI has no valid moves!".to_string();
+                    self.message = "Ni veljavnih potez za AI!".to_string();
                 }
-                self.ai_move_queued = false; // Reset the flag
+                self.ai_move_queued = false;
             }
 
             if self.game_over {

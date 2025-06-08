@@ -1,15 +1,10 @@
-# Rust Connect N
-
-Current stats:
-- max depth 11 (~3s) (12 <10s wait time at first)
-- works on all sized (the bigger the worse it preforms - still very good)
-
-Needed optimizations:
-- heuristics (threats)
-- transposition table (Zobrist hashing)
-- move ordering
-- Iterative Deepening
+# N v vrsto
 
 
-TODO:
-- create new branch - slo
+Projektna naloga - informatika 3. letnik
+
+
+Tijan Nartnik
+
+
+maj 2025

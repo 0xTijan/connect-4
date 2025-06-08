@@ -7,7 +7,10 @@ use ui::Connect4App;
 use eframe::egui;
 use terminal::{game_mode_settings_input, main_loop_terminal, Mode};
 
+
+// glavna funkcija, ki se izvede ob zagonu programa
 fn main() -> eframe::Result<()> {
+    // določi vrsto igre (terminal ali novo okno)
     let mode = game_mode_settings_input();
 
     if mode == Mode::Ui {
@@ -18,7 +21,7 @@ fn main() -> eframe::Result<()> {
         };
 
         eframe::run_native(
-            "Connect N",
+            "N v vrsto",
             options,
             Box::new(|cc| {
                 Ok(Box::new(Connect4App::default(cc)))
