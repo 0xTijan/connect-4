@@ -136,7 +136,7 @@ fn center_preference(board: &BitBoard, piece: Piece) -> i32 {
     }
 
     // Scale down to ensure it doesn't overpower threat evaluation
-    score / 5
+    score
 }
 
 pub fn minimax(

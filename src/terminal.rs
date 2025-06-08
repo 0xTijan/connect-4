@@ -115,11 +115,11 @@ pub fn get_player_column_input(size: u8) -> u8 {
 }
 
 pub fn difficulty_input() -> u8 {
-    let mut difficulty = 5;
+    let mut difficulty = 10;
 
     // get rows input
     loop {
-        println!("Enter the difficulty (easiest 1 <-> 10 hardest, default 5): ");
+        println!("Enter the difficulty (easiest 1 <-> 10 hardest, default 10): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -139,13 +139,43 @@ pub fn difficulty_input() -> u8 {
     difficulty
 }
 
+pub fn first_player_input() -> bool {
+    let mut player_starts = true;
+
+    loop {
+        println!("Start first? (y - yes, n - AI starts first, default y): ");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
+
+        let trimmed = input.trim();
+
+        if trimmed == "y" {
+            player_starts = true;
+            break;
+        } else if trimmed == "n" {
+            player_starts = false;
+            break;
+        } else if trimmed.is_empty() {
+            break;
+        } else {
+            println!("Chose y or n.");
+        }
+    }
+
+    player_starts
+}
+
 pub fn main_loop_terminal() {
     let settings = get_player_settings_input();
     let difficulty = difficulty_input(); // user inputs difficulty
+    let player_starts = first_player_input();
     let mut board = BitBoard::new(settings.0, settings.1, settings.2);
     println!("{}", board);
 
-    let mut current = Piece::Player;
+    let mut current = match player_starts {
+        true => Piece::Player,
+        false => Piece::AI,
+    };
 
     loop {
         let col: u8;

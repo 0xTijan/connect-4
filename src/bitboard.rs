@@ -132,41 +132,6 @@ impl BitBoard {
 
         false
     }
-
-    pub fn can_win_next_move(&self, piece: Piece) -> bool {
-        for col in self.get_valid_locations() {
-            if let Some(next_board) = self.drop_piece(col, piece) {
-                if next_board.check_win(piece) {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    // prints the board state to the terminal
-    /*pub fn print(&self) {
-        println!();
-        for r in (0..self.rows).rev() {
-            for c in 0..self.cols {
-                // get corresponding piece in that position
-                let symbol = match self.get_piece(r, c) {
-                    Piece::Empty => '.',
-                    Piece::Player => 'X',
-                    Piece::AI => 'O',
-                };
-                print!(" {} ", symbol);
-            }
-            println!();
-        }
-        // draw a bottom line
-        println!("{}", "-".repeat((self.cols as usize) * 3));
-        // print column numbers
-        for c in 0..self.cols {
-            print!(" {} ", c);
-        }
-        println!("\n");
-    }*/
 }
 
 impl fmt::Display for BitBoard {
