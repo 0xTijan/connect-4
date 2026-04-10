@@ -1,10 +1,8 @@
-# N v vrsto
+# Maturitetna naloga pri predmetu informatika
+## 4 v vrsto z algoritmom minimax
 
+Avtor: Tijan Nartnik
 
-Projektna naloga - informatika 3. letnik
+Mentor: Klemen Bajec
 
-
-Tijan Nartnik
-
-
-maj 2025
+Gimnazija Vič, april 2026
