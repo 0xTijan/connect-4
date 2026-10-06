@@ -3,12 +3,12 @@ use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct BitBoard {
-    pub player_mask: u128,  // bitboard for player pieces
-    pub ai_mask: u128,      // bitboard for AI pieces
+    pub player_mask: u128,  // bitboard za igralčeve žetone
+    pub ai_mask: u128,      // bitboard za AI žetone
     heights: Vec<u8>,
     pub rows: u8,
     pub cols: u8,
-    pub connect: u8,        // number of pieces to connect to win
+    pub connect: u8,        // zathevana število žetonov za zmago
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -19,10 +19,10 @@ pub enum Piece {
 }
 
 impl BitBoard {
-    // create a new BitBoard with the given number of rows and columns
+    // ustvari novo BitBoard z danimi parametri
     pub fn new(rows: u8, cols: u8, connect: u8) -> Self {
         Self {
-            player_mask: 0, // initialize empty boards
+            player_mask: 0, // bitboard=0 - ni žetonov
             ai_mask: 0,
             heights: vec![0; cols as usize],
             rows,
@@ -31,44 +31,44 @@ impl BitBoard {
         }
     }
 
-    // returns integer [0, rows * cols) where the bit is located in the bitboard (which bit in the u128 is this cell at)
-    // bits are ordered from left to right, bottom to top of the column, with 1 bit gap between columns
+    // vrne indeks bitov ki je določen s stolpcem in vrstico [0, rows * cols)] - kje v u128 se nahaja bit (celica)
+    // biti so razporejeni od leve proti desni, od spodaj navzgor v stolpcu, z enim bitom presledka med stolpci
     fn bit_index(&self, row: u8, col: u8) -> u8 {
         col * (self.rows + 1) + row
     }
 
-    // returns u128 with only one bit set to 1 at the position given by bit_index, others are 0
+    // vrne bitmasko z enim bitom nastavljenim na 1 na poziciji, ki jo določa bit_index (row, col)
     fn bit(&self, row: u8, col: u8) -> u128 {
         1u128 << self.bit_index(row, col)
     }
 
-    // checks if column is not full
+    // preveri, če je stolpec še prazen
     pub fn is_valid_location(&self, col: u8) -> bool {
         self.heights[col as usize] < self.rows
     }
 
-    // returns a vector of all valid columns (where piece can be dropped)
+    // vrne seznam vseh veljavnih stolpcev (kjer lahko žeton spustimo)
     pub fn get_valid_locations(&self) -> Vec<u8> {
         (0..self.cols).filter(|&c| self.is_valid_location(c)).collect()
     }
 
-    // returns a new BitBoard if the piece was dropped successfully
+    // vrne nov BitBoard z dodanim žetonom v stolpec
     pub fn drop_piece(&self, col: u8, piece: Piece) -> Option<Self> {
-        // check if column is not full
+        // preveri, če je stolpec veljaven (če ni poln)
         if !self.is_valid_location(col) {
             return None;
         }
 
-        // get the row where the piece will be dropped (first empty row in the column from bottom)
+        // shrani višino stolpca, da veš, kje bo žeton padel - vrstica
         let row = self.heights[col as usize];
-        // get the bitmask to set for the piece (in correct position)
+        // shrani bitmasko, ki ustreza tej poziciji (lokacija kjer bi žeton padel)
         let bit_to_set = self.bit(row, col);
 
         let mut new_board = self.clone();
-        // increase the height of the column - piece is dropped
+        // povečaj višino stolpca, ker bo padel žeton
         new_board.heights[col as usize] += 1;         
 
-        // set the bit in the correct BitBoard (according to the player)
+        // nastavi bit v ustreznem bitboardu glede na vrsto žetona (igralec ali AI)
         match piece {
             Piece::Player => new_board.player_mask |= bit_to_set,
             Piece::AI => new_board.ai_mask |= bit_to_set,
@@ -78,7 +78,7 @@ impl BitBoard {
         Some(new_board)
     }
 
-    // returns the piece at given row and column
+    // vrne vrsto žetona na dani poziciji (vrstica, stolpec)
     pub fn get_piece(&self, row: u8, col: u8) -> Piece {
         let bit = self.bit(row, col);
 
@@ -91,40 +91,41 @@ impl BitBoard {
         }
     }
 
-    // returns boolean if the whole board is full
+    // preveri, če je BitBoard poln (vsi stolpci so polni)
     pub fn is_full(&self) -> bool {
         self.heights.iter().all(|&h| h >= self.rows)
     }
 
-    // checks if the given piece has won - using a bitwise shift method
+    // preveri, če je določen žeton zmagal
     pub fn check_win(&self, piece: Piece) -> bool {
-        // select the corresponding bitmask
+        // izberi masko glede na vrsto žetona
         let mask = match piece {
             Piece::Player => self.player_mask,
             Piece::AI => self.ai_mask,
             _ => 0,
         };
 
-        let row_stride = self.rows + 1; // 1 bit gap
+        let row_stride = self.rows + 1; // 1 bit presledek
+        // možne smeri za preverjanje zmage
         let directions = [
-            1,          // vertical
-            row_stride,       // horizontal (moving to next column)
-            row_stride - 1,   // diagonal / (one up, one right)
-            row_stride + 1    // diagonal \ (one down, one right)
+            1,                  // navpično
+            row_stride,         // vodoravno (preskakovanje stolpcev)
+            row_stride - 1,     // diagonalno / (en gor, en desno)
+            row_stride + 1      // diagonalno \ (en dol, en desno)
         ];
         
-        // check for each direction
+        // preveri vsako smer
         for dir in directions {
             let mut current = mask;
 
-            // shift and AND the mask multiple times to detect a sequence - repeat for connect-1 times
-            // example: connect 4 => 3 times shift and AND
+            // večkrateni shift in AND operacije na maski za preverjanje zaporedja žetonov - ponovi za connect-1 krat
+            // primer: connect 4 => 3 krat shift in AND
             for _ in 0..self.connect - 1 {
-                // shift the mask in direction once
+                // shiftaj masko v smeri dir enkrat
                 current = current & (current >> dir);
             }
 
-            // if bits remain after shifting - won
+            // če so prisotni biti v maski, potem je zmagovalna kombinacija
             if current != 0 {
                 return true;
             }
@@ -136,7 +137,7 @@ impl BitBoard {
 
 impl fmt::Display for BitBoard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f)?; // blank line for spacing
+        writeln!(f)?;
         for r in (0..self.rows).rev() {
             for c in 0..self.cols {
                 let symbol = match self.get_piece(r, c) {
@@ -146,14 +147,14 @@ impl fmt::Display for BitBoard {
                 };
                 write!(f, " {} ", symbol)?;
             }
-            writeln!(f)?; // newline after each row
+            writeln!(f)?;
         }
-        writeln!(f, "{}", "-".repeat((self.cols as usize) * 3))?; // bottom line
+        writeln!(f, "{}", "-".repeat((self.cols as usize) * 3))?;
 
         for c in 0..self.cols {
             write!(f, " {} ", c)?;
         }
-        writeln!(f)?; // final newline
+        writeln!(f)?;
         Ok(())
     }
 }

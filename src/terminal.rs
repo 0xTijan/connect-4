@@ -12,7 +12,7 @@ pub fn game_mode_settings_input() -> Mode {
     let mut mode = Mode::Ui;
 
     loop {
-        println!("Play in window (y, n - terminal, default y): ");
+        println!("Igraj v novem oknu (y, n - terminal, privzeto y): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -27,7 +27,7 @@ pub fn game_mode_settings_input() -> Mode {
         } else if trimmed.is_empty() {
             break;
         } else {
-            println!("Chose y or n.");
+            println!("Izberi y ali n.");
         }
     }
 
@@ -39,9 +39,9 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
     let mut column_count = 7;
     let mut win_sequence = 4;
 
-    // get rows input
+    // dobi input za vrstice
     loop {
-        println!("Enter number of rows (2-20, default 6): ");
+        println!("Vpiši število vrstic (2-20, privzeto 6): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -50,18 +50,18 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
                 row_count = n;
                 break;
             }
-            println!("Rows must be at least 3");
+            println!("Igra mora imeti vsaj 2 vrstice.");
         } else if input.trim().is_empty() {
             break;
         } else {
-            println!("Invalid input");
+            println!("Neveljaven vnos.");
         }
     }
 
-    // get columns input
+    // dobi input za stolpce
     let max_col = get_conjugate_value(row_count);
     loop {
-        println!("Enter number of columns (2-{}, default 7): ", {max_col});
+        println!("Vpiši število stolpcev (2-{}, privzeto 7): ", {max_col});
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -70,18 +70,18 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
                 column_count = n;
                 break;
             }
-            println!("Columns must be at least 3");
+            println!("Igra mora imeti vsaj 2 stolpce.");
         } else if input.trim().is_empty() {
             break;
         } else {
-            println!("Invalid input");
+            println!("Napačen vnos.");
         }
     }
 
-    // get winning sequence input
+    // dobi input za dolžino zmagovalne kombinacije
     let max_win = row_count.min(column_count);
     loop {
-        println!("Enter the required winning sequence (2-{}, default 4): ", {max_win});
+        println!("Vpiši dolžino zmagovalne kombinacije (2-{}, privzeto 4): ", {max_win});
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -90,11 +90,11 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
                 win_sequence = n;
                 break;
             }
-            println!("Win sequence length must be at least 3.");
+            println!("Dolžina zmagovalne kombinacije mora biti vsaj 2.");
         } else if input.trim().is_empty() {
             break;
         } else {
-            println!("Invalid input");
+            println!("Napačen vnos.");
         }
     }
 
@@ -103,23 +103,23 @@ pub fn get_player_settings_input() -> (u8, u8, u8) {
 
 pub fn get_player_column_input(size: u8) -> u8 {
     loop {
-        println!("Enter column number (0-{}): ", {size-1});
+        println!("Vpiši številko stolpca (0-{}): ", {size-1});
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
         match input.trim().parse() {
             Ok(col) if col < size => return col,
-            _ => println!("Invalid column."),
+            _ => println!("Neveljaven vnos, poskusi ponovno."),
         }
     }
 }
 
 pub fn difficulty_input() -> u8 {
-    let mut difficulty = 10;
+    let mut difficulty = 8;
 
-    // get rows input
+    // dobi input za težavnost
     loop {
-        println!("Enter the difficulty (easiest 1 <-> 10 hardest, default 10): ");
+        println!("Vnesi težavnost igre (najlažje 1 <-> 10 najtežje, privzeto 8): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -128,11 +128,11 @@ pub fn difficulty_input() -> u8 {
                 difficulty = n;
                 break;
             }
-            println!("Rows must be at least 3");
+            println!("Neveljavna težavnost, izberi med 1 in 10.");
         } else if input.trim().is_empty() {
             break;
         } else {
-            println!("Invalid input");
+            println!("Neveljaven vnos.");
         }
     }
 
@@ -143,22 +143,22 @@ pub fn first_player_input() -> bool {
     let mut player_starts = true;
 
     loop {
-        println!("Start first? (y - yes, n - AI starts first, default y): ");
+        println!("Kdo začne? (j - ti, a - AI začne, privzeto j): ");
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
         let trimmed = input.trim();
 
-        if trimmed == "y" {
+        if trimmed == "j" {
             player_starts = true;
             break;
-        } else if trimmed == "n" {
+        } else if trimmed == "a" {
             player_starts = false;
             break;
         } else if trimmed.is_empty() {
             break;
         } else {
-            println!("Chose y or n.");
+            println!("Izberi j ali a.");
         }
     }
 
@@ -167,7 +167,7 @@ pub fn first_player_input() -> bool {
 
 pub fn main_loop_terminal() {
     let settings = get_player_settings_input();
-    let difficulty = difficulty_input(); // user inputs difficulty
+    let difficulty = difficulty_input();
     let player_starts = first_player_input();
     let mut board = BitBoard::new(settings.0, settings.1, settings.2);
     println!("{}", board);
@@ -182,49 +182,49 @@ pub fn main_loop_terminal() {
         if current == Piece::Player {
             col = get_player_column_input(settings.1);
         } else {
-            // AI move using minimax
-            println!("AI is thinking...");
+            // AI poteza z minimax
+            println!("AI razmišlja...");
             col = match minimax(&board, difficulty, i32::MIN, i32::MAX, true).0 {
                 Some(c) => c,
                 None => {
-                    println!("No valid moves for AI!");
+                    println!("AI ne more izvesti poteze, igra je končana.");
                     break;
                 }
-            }; // adjust depth if needed
-            println!("AI chooses column: {}", col);
+            };
+            println!("AI izbere stolpec {}", col);
         }
 
-        // Try to apply move
+        // Poskusi dodati žeton v stolpec
         if let Some(new_board) = board.drop_piece(col, current) {
             board = new_board;
             println!("{}", board);
 
             if board.check_win(current) {
-                println!("{:?} wins!", current);
+                println!("{:?} zmaga!", current);
                 break;
             }
 
             if board.is_full() {
-                println!("It's a draw!");
+                println!("Izenačeno!");
                 break;
             }
 
-            // Switch player
+            // zamenjaj trenutnega igralca
             current = if current == Piece::Player { Piece::AI } else { Piece::Player };
         } else {
-            println!("Column {} is full. Try again.", col);
+            println!("Stolpec {} je poln. Poskusi ponovno.", col);
         }
     }
 }
 
-const MAX_DIFFICULTY: u8 = 20;
+const MAX_DIFFICULTY: u8 = 10;
 const MIN_DIFFICULTY: u8 = 1;
 
 fn is_valid_difficulty(difficulty: u8) -> bool {
     difficulty >= MIN_DIFFICULTY && difficulty <= MAX_DIFFICULTY
 }
 
-// board area must be < 128 so that it fits in one number (with paddings between columns)
+// površina plošče mora biti < 128, da se prilega v eno število (s presledki med stolpci)
 fn get_conjugate_value(x: u8) -> u8 {
     (128/(x+1))-1
 }

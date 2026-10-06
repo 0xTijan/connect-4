@@ -129,13 +129,12 @@ fn center_preference(board: &BitBoard, piece: Piece) -> i32 {
         let mask = ((1u128 << board.rows) - 1) << col_start;
         let count = (bitboard & mask).count_ones() as i32;
 
-        // Weight: highest at center, decreases linearly to edges
+        // utež je največja v sredini, linearno pada proti robovom
         let weight = mid - (mid - c as i32).abs();
 
         score += weight * count;
     }
 
-    // Scale down to ensure it doesn't overpower threat evaluation
     score
 }
 
@@ -146,8 +145,6 @@ pub fn minimax(
     beta: i32,
     is_maximizing: bool
 ) -> (Option<u8>, i32) {
-    let player = if is_maximizing { Piece::AI } else { Piece::Player };
-
     if board.check_win(Piece::AI) {
         return (None, 100_000_000);
     } else if board.check_win(Piece::Player) {
@@ -157,13 +154,13 @@ pub fn minimax(
     }
     
     if depth == 0 {
-        return (None, evaluate_heuristic(board, player));
+        return (None, evaluate_heuristic(board, Piece::AI));
     }
 
     let valid_moves = board.get_valid_locations();
 
     if is_maximizing {
-        // ai turn - maximizing player
+        // ai poteza - maximizing igralec
         let mut best_score = i32::MIN;
         let mut best_col = None;
         let mut alpha = alpha;
@@ -186,7 +183,7 @@ pub fn minimax(
 
         (best_col, best_score)
     } else {
-        // player turn - minimizing player
+        // player poteza - minimizing igralec
         let mut best_score = i32::MAX;
         let mut best_col = None;
         let mut beta = beta;

@@ -1,15 +1,14 @@
-# Rust Connect N
+# Maturitetna naloga pri predmetu informatika
+## 4 v vrsto z algoritmom minimax
 
-Current stats:
-- max depth 11 (~3s) (12 <10s wait time at first)
-- works on all sized (the bigger the worse it preforms - still very good)
+Avtor: Tijan Nartnik
 
-Needed optimizations:
-- heuristics (threats)
-- transposition table (Zobrist hashing)
-- move ordering
-- Iterative Deepening
+Mentor: Klemen Bajec
+
+Gimnazija Vič, april 2026
 
 
-TODO:
-- create new branch - slo
+## Kako zagnati program
+1. git clone (tega projekta)
+2. cargo run
+3. sledi navodilom v terminalu (vnos nastavitev igre)
